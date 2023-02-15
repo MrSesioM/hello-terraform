@@ -21,8 +21,23 @@ resource "aws_instance" "app_server" {
     "sg-01026b2bbaa8626e7",
   ]
 
+  user_data = file("apache.sh")
+
+  connection {
+    type        = "ssh"
+    user        = "ec2-user"
+    private_key = file("~/.ssh/lucatic_key.pem")
+    host        = self.public_ip
+  }
+
+  provisioner "file" {
+    source      = "./public_html/"
+    destination = "/tmp/"
+    on_failure  = fail
+  }
+
   tags = {
-    Name = "terraformInstance"
+    Name = var.instance_name
     APP  = "vue2048"
   }
 }
