@@ -1,0 +1,45 @@
+---
+
+- hosts: all
+  become: true
+  gather_facts: false
+
+  vars:
+    ansible_user: ec2-user
+
+  tasks:
+    - name: Waiting for SSH connection
+      wait_for_connection:
+        delay: 10
+        sleep: 5
+        timeout: 300
+
+
+- name: "Installing httpd's server and 2048's app"
+  hosts: all
+  become: true
+
+  vars:
+    ansible_user: ec2-user
+
+  tasks:
+
+    - name: Install httpd
+      yum:
+        name: httpd
+        state: latest
+
+    - name: Iniciate and enable httpd
+      service:
+        name: httpd
+        enabled: true
+        state: started
+
+    - name: Install 2048
+      copy:
+        src: ./public_html/
+        dest: /var/www/html/
+        owner: apache
+        group: apache
+        mode: "0644"
+        directory_mode: "0755"
