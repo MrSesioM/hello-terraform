@@ -38,14 +38,11 @@
 
     - name: Install 2048
       copy:
-        src: "{{ item }}"
+        src: docker-compose.yml
         dest: /home/ec2-user
         owner: root
         group: root
         mode: "0644"
-      loop:
-        - docker-compose.yml
-        - Dockerfile
 
     - name: Building and deploying 2048's image app
       shell: "docker-compose build && docker-compose run -d"
