@@ -10,7 +10,7 @@ pipeline {
                 }
                     sh 'git tag 1.0.${BUILD_NUMBER}'
                     sshagent(['git-login']) {
-                        sh 'git push --tags'
+                        sh 'git push git@github.com:MrSesioM/hello-2048.git --tags'
                     }
                 }
         }
@@ -18,17 +18,17 @@ pipeline {
         stage('Push') {
             steps {
                 sh 'VERSION=1.0.${BUILD_NUMBER} docker-compose build'
-		sh 'VERSION=1.0.${BUILD_NUMBER} docker-compose push'
+	        sh 'VERSION=1.0.${BUILD_NUMBER} docker-compose push'
             }
         }
-        stage('ssh-connection') {
-            steps {
-                sshagent(['d89380b3-eee1-48ad-b34f-5ab73318ad48']) {
-                    sh '''
-                    ssh -o "StrictHostKeyChecking no" ec2-user@52.211.227.27 "docker pull ghcr.io/mrsesiom/2048:latest && docker pull ghcr.io/mrsesiom/2048:1.0.${BUILD_NUMBER}"
-                    '''
-                }
-            }
-        }
+        stage('Create instance and install app'){
+    		steps{
+    			withAWS(credentials:'AWS Credentials'){
+    			    sh 'terraform destroy -lock=false -auto-approve'
+    				sh 'terraform apply -auto-approve'
+    				ansiblePlaybook credentialsId: 'Ansible', inventory: 'aws_ec2.yml', playbook: 'httpd.yml'
+    			}
+    		}
+    	}
     }
 }

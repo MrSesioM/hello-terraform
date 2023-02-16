@@ -2,6 +2,6 @@ version: "3"
 services:
   hello-2048:
     build: .
-    image: ghcr.io/mrsesiom/2048:${VERSION_TAG:-latest}
+    image: ghcr.io/mrsesiom/2048:${VERSION:-latest}
     ports:
       - "8080:80"
