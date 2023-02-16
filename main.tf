@@ -21,10 +21,10 @@ resource "aws_instance" "app_server" {
     "sg-01026b2bbaa8626e7",
   ]
 
-  provisioner "local-exec" {
-    command    = "ansible-playbook -i aws_ec2.yml httpd.yml"
-    on_failure = fail
-  }
+#  provisioner "local-exec" {
+#    command    = "ansible-playbook -i aws_ec2.yml httpd.yml"
+#    on_failure = fail
+#  }
 
   tags = {
     Name = var.instance_name
