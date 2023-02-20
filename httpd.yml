@@ -33,14 +33,18 @@
         enabled: true
         state: started
 
-    - name: Install docker-compose
-      community.docker.docker_compose:
-      project_src: /home/ec2-user/app
-      pull: true
-      vars:
-        ansible_python_interpreter: /usr/bin/python3
+    - name: Add user to Docker's group
+      user:
+        name: ec2-user
+        groups: docker
+        append: yes
 
-    - name: Install 2048
+    - name: Install docker-compose
+      pip:
+        name: docker-compose
+        executable: pip3
+
+    - name: Adding docker-compose.yml
       copy:
         src: docker-compose.yml
         dest: /home/ec2-user
@@ -48,6 +52,9 @@
         group: root
         mode: "0644"
 
-    - name: Building and deploying 2048's image app
-      shell: "docker-compose pull"
-      shell: "docker-compose run -d"
+    - name: Deploying 2048's app
+      community.docker.docker_compose:
+        project_src: /home/ec2-user/
+        pull: true
+      vars:
+        ansible_python_interpreter: /usr/bin/python3
